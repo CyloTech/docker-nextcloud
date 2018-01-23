@@ -3,8 +3,8 @@ FROM lsiobase/alpine.nginx:3.6
 # set version label
 ARG BUILD_DATE
 ARG VERSION
-LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
-LABEL maintainer="sparklyballs"
+LABEL build_version="Cylo.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
+LABEL maintainer="Cylo"
 
 # package version
 ENV NEXTCLOUD_VER="12.0.4"
@@ -27,6 +27,7 @@ RUN \
 	zlib-dev && \
  echo "**** install runtime packages ****" && \
  apk add --no-cache \
+    postgresql \
 	curl \
 	ffmpeg \
 	libxml2 \
@@ -93,6 +94,14 @@ RUN \
 # copy local files
 COPY root/ /
 
+ADD postgresql.conf /etc/postgresql/9.6/main/postgresql.conf
+ADD pg_hba.conf /etc/postgresql/9.6/main/pg_hba.conf
+RUN chown postgres:postgres /etc/postgresql/9.6/main/*.conf
+ADD pgsql.sh /pgsql.sh
+RUN chmod +x /pgsql.sh
+
+CMD ["/pgsql.sh"]
+
 # ports and volumes
-EXPOSE 443
+EXPOSE 80 5432
 VOLUME /config /data
