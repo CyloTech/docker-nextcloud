@@ -94,6 +94,13 @@ RUN \
 # copy local files
 COPY root/ /
 
+RUN sed -i 's#worker_processes auto#worker_processes 2#g' /etc/nginx/nginx.conf
+RUN sed -i 's#worker_processes auto#worker_processes 2#g' /etc/php7/php-fpm.d/www.conf && \
+    sed -i 's#pm.max_children = 5#pm.max_children = 3#g' /etc/php7/php-fpm.d/www.conf && \
+    sed -i 's#pm.start_servers = 2#pm.start_servers = 1#g' /etc/php7/php-fpm.d/www.conf && \
+    sed -i 's#pm.min_spare_servers = 1#pm.min_spare_servers = 1#g' /etc/php7/php-fpm.d/www.conf && \
+    sed -i 's#pm.max_spare_servers = 3#pm.max_spare_servers = 2#g' /etc/php7/php-fpm.d/www.conf
+
 ADD postgresql.conf /etc/postgresql/9.6/main/postgresql.conf
 ADD pg_hba.conf /etc/postgresql/9.6/main/pg_hba.conf
 RUN chown postgres:postgres /etc/postgresql/9.6/main/*.conf
